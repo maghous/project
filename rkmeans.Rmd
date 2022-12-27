@@ -1,0 +1,85 @@
+---
+title: "cluster"
+author: "Abdellah Maghous"
+date: "27/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r cars}
+data<-read.csv('Clustering.csv',header = T)
+data=as.data.frame(data)
+head(data)
+```
+```{r}
+data=data[,-1]
+head(data)
+```
+
+```{r}
+#scale data
+data=scale(data)
+head(data)
+```
+```{r}
+data=as.data.frame(data)
+```
+
+
+
+```{r}
+#scatter plot 
+library(ggplot2)
+ggplot(data, aes(x, y,color="red")) + 
+    geom_point() +  
+    theme(
+      axis.title.x = element_text(size = 10),
+      axis.text.x = element_text(size = 10),
+      axis.title.y = element_text(size = 10))
+
+```
+
+```{r}
+library(factoextra)
+fviz_nbclust(data, kmeans, method = "wss")
+fviz_nbclust(data, kmeans, method = "silhouette")
+```
+
+```{r}
+#kmeans
+set.seed(123)
+km<-kmeans(data,2)
+km
+```
+```{r}
+#we add anothor comlumn for label for each row
+df=data
+df$label=km$cluster
+head(df)
+```
+
+```{r}
+fviz_cluster(km, data = data,
+  palette = c("red", "green"),
+  ellipse.type = "euclid", # Concentration ellipse
+  star.plot = TRUE, # Add segments from centroids to items
+  repel = TRUE, # Avoid label overplotting (slow)
+  ggtheme = theme_minimal())
+```
+
+
+
+
+
+
+
+
+
+
