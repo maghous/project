@@ -1,0 +1,35 @@
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(gridExtra)
+library(pROC)
+library(MASS)
+library(caTools)
+library(caret)
+library(caretEnsemble)
+df<-read.csv("data.csv")
+str(df)
+summary(df)
+prop.table(table(df$diagnosis))
+mat_corr<-cor(df[,3:(ncol(df)-1)])
+corrplot(mat_corr, method="circle")
+corrplot(mat_corr, method="pie")
+corrplot(mat_corr, method="color")
+corrplot(mat_corr, method="number")
+corrplot(mat_corr, type="upper")
+df$diagnosis <- as.factor(df$diagnosis)
+df[,33] <- NULL
+#modeling
+set.seed(123)
+index<-createDataPartition(df$diagnosis,p=0.5,list=F)
+df_train<-df[index,-1]
+df_test<-df[-index,-1]
+###PCA
+respca<-prcomp(df[,3:ncol(df)],center = T,scale =T )
+plot(respca,type="l",col='red')
+datapca<-as.data.frame(respca$x)
+ggplot(datapca,aes(x=PC1,y=PC2,col=df$diagnosis))+geom_point(alpha=0.5)
+####
+ggplot(datapca,aes(x=PC1,fill=df$diagnosis))+geom_density(alpha=0.3)
+ggplot(datapca,aes(x=PC2,fill=df$diagnosis))+geom_density(alpha=0.3)
